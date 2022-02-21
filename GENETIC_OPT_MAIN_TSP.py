@@ -36,7 +36,7 @@ if __name__ == '__main__':
         return distance
 
 
-    N_points = 6
+    N_points = 8
     coordinates = []
     for i in range(N_points):
         x_random = random.uniform(-1, 1)

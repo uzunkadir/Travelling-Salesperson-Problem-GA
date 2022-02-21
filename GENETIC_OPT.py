@@ -202,7 +202,7 @@ class Genetic_Opt:
         
         print("\n","="*60)
 
-        for j in tqdm(range(len(self.population)), desc=f"{gen_i}.NESİL | Backtestler Yapılıyor: "):
+        for j in tqdm(range(len(self.population)), desc=f"{gen_i}.NESİL | Fitnesslar Hesaplanıyor: "):
 
             paramlist  =  self.population.iloc[j,:self.param_count].copy().values.tolist()
             fit = Genetic_Opt.getFitnessSerial(self, paramlist)
@@ -247,7 +247,7 @@ class Genetic_Opt:
             #########################    BACKTEST    ##############################
             self.population.loc[:,"fitness"] = np.nan
 
-            for j in tqdm(range(len(self.population)), desc=f"{gen_i}.NESİL | Backtestler Yapılıyor: "):
+            for j in tqdm(range(len(self.population)), desc=f"{gen_i}.NESİL | Fitnesslar Hesaplanıyor: "):
                 
                 paramlist  = self.population.iloc[j,:self.param_count].copy().values.tolist()                
 
