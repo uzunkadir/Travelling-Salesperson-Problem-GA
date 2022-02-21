@@ -334,7 +334,7 @@ optimizing = Genetic_Opt(coordinates       = coordinates,
                          child             = 50,
                          mutation          = 50, 
                          generation        = 50,
-                         fitTercih         = "min")
+                         fitPrefer         = "min")
 
 optimizing.run_serial()
 # besties = optimizing.run_paralel(coreCount=2)
