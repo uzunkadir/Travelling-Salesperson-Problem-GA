@@ -41,7 +41,7 @@ if __name__ == '__main__':
             
     # plt.plot(coordinates.iloc[:,0], coordinates.iloc[:,1])
     plt.scatter(coordinates.iloc[:,0], coordinates.iloc[:,1])
-
+    plt.show()
     
     pop_all = pd.DataFrame(permutations(range(N_points)))
     
