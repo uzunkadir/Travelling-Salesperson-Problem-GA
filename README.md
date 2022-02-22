@@ -61,38 +61,55 @@ class Genetic_Opt:
 ````
     def child_def(self):
         
+        besties_list    = self.besties.iloc[:,:-1].copy().values.tolist()
+        tested_list     = self.tested_comb.iloc[:,:-1].copy().values.tolist()
+        pop_list        = self.population.copy().values.tolist()    
+        
         # besties listesinin her sütunundaki tekrarlanan değerlerini siler
         pop_child_comb = []
         for k in range(self.pathLen):
             pop_child_comb.append(list( set(self.besties.iloc[:,k].values) ))
+        child_pop = []
         
+        t = datetime.now()
         
-        besties_list    = self.besties.iloc[:,:-1].copy().values.tolist()
-        tested_list     = self.tested_comb.iloc[:,:-1].copy().values.tolist()
-        
-        # üretilebilecek tüm çocuklar üzerinden döngüyle geçer
-        child_pop_all = []
-        for childPath in product(*pop_child_comb):
+        while True:
+            # crossover süresi 5 saniyeden fazla sürerse veya 
+            # istenen sayıya ulaşılırsa döngüyü durdurur
+            if ((len(child_pop)) >= self.child_pop_number) or\
+                (datetime.now()-t).total_seconds() > 5: break
             
-            #  üretilen rotada tekrarlanan istasyonlar varsa atlar
-            if len(set(childPath)) != self.pathLen or childPath[0]!=0:
-                continue
+            childPath = [0]
+            state = True
             
-            # üretilen rota besties listesinde ve test edilenler listesinde yoksa populasyona ekler
-            if ((list(childPath) not in besties_list) and \
-                (list(childPath) not in tested_list) ):
-                child_pop_all.append(childPath)
+            while state:
+                for i in range(1,len(pop_child_comb)):
+                    if len(childPath) == self.pathLen:
+                        state = False
+                        break
+                    a = random.choice(pop_child_comb[i])
+                    if a not in childPath:  
+                        childPath.append(a)
+
+            # Hamilton döngüsünde döngünün tersi de kendisidir.
+            childPathR = [0]+childPath[1:][::-1]
             
-            # crossover için koyulan limite eriştiğinde döngüyü erken durdurur
-            if len(child_pop_all) == self.child_pop_number:
-                break
-            
-        child_pop = pd.DataFrame(child_pop_all)
+            if ((childPath  not in besties_list) and \
+                (childPath  not in tested_list)  and \
+                (childPath  not in child_pop)    and \
+                (childPath  not in pop_list)     and \
+                (childPathR not in besties_list) and \
+                (childPathR not in tested_list)  and \
+                (childPathR not in child_pop)    and \
+                (childPathR not in pop_list)        ):
+                
+                child_pop.append(childPath)
+
+        self.child_pop = pd.DataFrame(child_pop)
         
         # crossover ile üretilen çocukları populasyona ekler
-        self.population    = pd.concat([self.population,child_pop],ignore_index=True)
+        self.population    = pd.concat([self.population,self.child_pop],ignore_index=True)
         self.child_pop_len = len(child_pop)
-        self.child_pop_all_len = len(child_pop_all)
 ````
 
 Mutasyon yapacak fonksiyon aşağıdaki gibi olacak
@@ -101,14 +118,38 @@ Mutasyon yapacak fonksiyon aşağıdaki gibi olacak
     def mutasyon_def(self, sample ):
         
         mutation = []
+        
         # başlangıç rotamız 0'dan nokta sayısına kadar artan sayılar
         path = list(range(self.pathLen))
         
-        for i in range(sample):
-            # başlangıç noktası hariç diğer noktaları shuffle yapar
-            randomPath = random.sample(path[1:], len(path[1:]))
-            mutation.append([0]+randomPath)
-            
+        besties_list    = self.besties.iloc[:,:-1].copy().values.tolist()
+        tested_list     = self.tested_comb.iloc[:,:-1].copy().values.tolist()
+        pop_list        = self.population.copy().values.tolist()
+        
+        t= datetime.now()
+        state = True
+        while state:
+            for i in range(sample):
+                if len(mutation)>=sample or ((datetime.now()-t).total_seconds()>5): 
+                    state=False
+                    break
+
+                # başlangıç noktası hariç diğer noktaları shuffle yapar
+                randomPath  = [0] + random.sample(path[1:], len(path[1:]))
+                
+                #  Hamilton döngüsünde döngünün tersi de kendisidir.
+                randomPathR = [0] + randomPath[1:][::-1]
+                
+                if ((randomPath  not in besties_list) and \
+                    (randomPath  not in tested_list)  and \
+                    (randomPath  not in mutation)     and \
+                    (randomPath  not in pop_list)     and \
+                    (randomPathR not in besties_list) and \
+                    (randomPathR not in tested_list)  and \
+                    (randomPathR not in mutation)     and \
+                    (randomPathR not in pop_list)        ):
+                    mutation.append(randomPath)
+                    
         mutation = pd.DataFrame(mutation)
 
         # mutasyon ile üretilen bireyleri populasyona ekler
@@ -124,14 +165,16 @@ Her nesil sonunda sonuçları çizdirmek için bir print fonksiyonumuz olsun.
         print("\n",
               f"geçen süre    : {gecenSure} "    ,"\n",
               f"besties       : {len(self.besties)}","\n",
-              f"crossover     : {self.child_pop_len} / {self.child_pop_number} / {self.child_pop_all_len}"          ,"\n",
+              f"crossover     : {self.child_pop_len} / {self.child_pop_number} "          ,"\n",
               f"mutasyon      : {self.mutasyon_len} / {self.mutasyon_pop_number}" ,"\n",
-              f"populasyon    : {len(self.population)-len(self.besties)}"         ,"\n",
+              f"populasyon    : {len(self.population)}"         ,"\n",
               f"test edilen   : {len(self.tested_comb)}"  ,"\n",
               "BESTIES LİSTESİ :", "\n",
               self.besties.iloc[:5].to_string(index=False), 
               end="\n")
+
         print("\n","="*60)
+
 ````
 
 Her güzergah için toplam mesafeyi hesaplayacak fonksiyon şu şekilde olacak. 
