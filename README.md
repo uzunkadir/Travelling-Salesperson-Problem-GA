@@ -1,6 +1,16 @@
 # Travelling_Sales_Problem_Genetic_Algorithm
 Gezgin Satıcı Problemi'nin Genetik Algoritmalarla Çözümü
 
+
+
+
+
+
+![2DTSP](videos/2DTSP.mp4)
+
+
+
+
 Gezgin Satıcı Problemi 
 
 Bir seyyar satıcı olduğunuzu düşünün. A şehrindesiniz ve n tane şehire uğramak istiyorsunuz. Her bir şehire yalnızca 1 kez uğrayarak tüm şehirleri dolaşıp tekrar A şehrine gelmek istiyorsunuz. En kısa rota hangisidir? 
@@ -92,16 +102,12 @@ class Genetic_Opt:
                         childPath.append(a)
 
             # Hamilton döngüsünde döngünün tersi de kendisidir.
-            childPathR = [0]+childPath[1:][::-1]
+            # childPathR = [0]+childPath[1:][::-1]
             
             if ((childPath  not in besties_list) and \
                 (childPath  not in tested_list)  and \
                 (childPath  not in child_pop)    and \
-                (childPath  not in pop_list)     and \
-                (childPathR not in besties_list) and \
-                (childPathR not in tested_list)  and \
-                (childPathR not in child_pop)    and \
-                (childPathR not in pop_list)        ):
+                (childPath  not in pop_list)    ):
                 
                 child_pop.append(childPath)
 
@@ -138,16 +144,12 @@ Mutasyon yapacak fonksiyon aşağıdaki gibi olacak
                 randomPath  = [0] + random.sample(path[1:], len(path[1:]))
                 
                 #  Hamilton döngüsünde döngünün tersi de kendisidir.
-                randomPathR = [0] + randomPath[1:][::-1]
-                
+                # randomPathR = [0] + randomPath[1:][::-1]
+
                 if ((randomPath  not in besties_list) and \
                     (randomPath  not in tested_list)  and \
                     (randomPath  not in mutation)     and \
-                    (randomPath  not in pop_list)     and \
-                    (randomPathR not in besties_list) and \
-                    (randomPathR not in tested_list)  and \
-                    (randomPathR not in mutation)     and \
-                    (randomPathR not in pop_list)        ):
+                    (randomPath  not in pop_list) ):
                     mutation.append(randomPath)
                     
         mutation = pd.DataFrame(mutation)
@@ -180,9 +182,14 @@ Her nesil sonunda sonuçları çizdirmek için bir print fonksiyonumuz olsun.
 Her güzergah için toplam mesafeyi hesaplayacak fonksiyon şu şekilde olacak. 
 ````
     def calculateDistance(self, path ):
-        
-        # öklid uzaklığı
-        def dist(x1,y1,x2,y2): return ((x2-x1)**2 + (y2-y1)**2)**0.5
+        # 2 boyut için uzaklık hesabı
+        if len(self.coordinates.columns)==2:
+            #öklid uzaklığı
+            def dist(x1,y1,x2,y2): return ((x2-x1)**2 + (y2-y1)**2)**0.5
+        # 3b boyut için uzaklık hesabı
+        if len(self.coordinates.columns)==3:
+            #öklid uzaklığı
+            def dist(x1,y1,z1,x2,y2,z2): return ((x2-x1)**2 + (y2-y1)**2 + (z2-z1)**2)**0.5
         
         # koordinatları istenen rotada sıraya sokar
         self.coor = self.coordinates.loc[path,:].copy()
@@ -195,8 +202,11 @@ Her güzergah için toplam mesafeyi hesaplayacak fonksiyon şu şekilde olacak.
         for i in range(1,len(self.coor)):
             dist_index = dist(*self.coor.iloc[i,:], *self.coor.iloc[i-1,:])
             self.distance += dist_index
-                                                
+
+
+                                  
         return self.distance
+        
 ````
 
 Fonksiyonları nesiller boyunca çalıştıracak bir fonksiyon daha yazalım. 
@@ -299,99 +309,8 @@ Fonksiyonları nesiller boyunca çalıştıracak bir fonksiyon daha yazalım.
         return self.bestieS
 ````
 
-Genetik algoritma sınıfımızı çalıştıracak başka bir python dosyasında noktaları üretip üzerinden algoritmayı çalıştıralım. 
-````
 
-from GENETIC_OPT import Genetic_Opt
-
-from datetime import datetime
-import math
-import random 
-import matplotlib.pyplot as plt
-import pandas as pd 
-import numpy as np
-from itertools import permutations
-
-# anlık rotayı ve en iyi rotayı yan yana çizdirmek için 1 satır ve 2 sütundan oluşacak subplot tanımlıyoruz
-fig, ax = plt.subplots(nrows=1, ncols=2)
-fig.suptitle("Travelling Salesperson Problem \nGenetic Algorithm Solution", fontsize=16)
-
-
-count = 0
-# Rotaları çizecek fonksiyon
-def plotFunction(indPath, indDist, bestPath, bestDist, gen_i):
-    
-    global coordinates, ax, count
-    count += 1
-    
-    # her iterasyonda 2 figure de temizleniyor
-    ax[0].clear()
-    ax[1].clear()
-    
-    # anlık rotanın koordinatları
-    indvCoor = coordinates.loc[indPath,:].copy()
-    indvCoor = indvCoor.append(indvCoor.iloc[0,:])
-    
-    # en iyi rotanın kooordinatları
-    bestCoor = coordinates.loc[bestPath,:].copy()
-    bestCoor = bestCoor.append(bestCoor.iloc[0,:])
-
-    # anlık rota çizdiriliyor
-    ax[0].plot(indvCoor.iloc[:,0], indvCoor.iloc[:,1],"-o")
-    ax[0].plot(indvCoor.iloc[0,0], indvCoor.iloc[0,1], c="red",marker="o",  markersize=10)
-    ax[0].set_title("{}.Generation \n{}.individual  \nIndividual Distance: {}".format(gen_i, count, round(indDist,4)),loc='left')
-    
-    # en iyi rota çizdiriliyor
-    ax[1].plot(bestCoor.iloc[:,0], bestCoor.iloc[:,1],"-o")
-    ax[1].plot(bestCoor.iloc[0,0], bestCoor.iloc[0,1], c="red",marker="o",  markersize=10)
-    ax[1].set_title("Best Distance: {}".format(round(bestDist,4)),loc='left')
-    
-    # her iki çizim arasında 0.001 saniye bekliyor
-    plt.pause(0.001)
-    
-    
-
-# rotada kaç nokta olacağını tanımlar 
-N_points = 10
-
-# X ve Y için -1,+1 aralığında rastgele koordinat üretir
-coordinates = []
-for i in range(N_points):
-    x_random = random.uniform(-1, 1)
-    y_random = random.uniform(-1, 1)
-    coordinates.append([x_random, y_random])
-coordinates = pd.DataFrame(coordinates)
-        
-# plt.plot(coordinates.iloc[:,0], coordinates.iloc[:,1])
-# plt.scatter(coordinates.iloc[:,0], coordinates.iloc[:,1])
-# plt.show()
-
-# pop_all = pd.DataFrame(permutations(range(N_points)))
-
-
-t = datetime.now()
-optimizing = Genetic_Opt(coordinates       = coordinates,
-                         plotFunction      = plotFunction,
-                         Population_Number = 50,
-                         best              = 10,
-                         child             = 50,
-                         mutation          = 50, 
-                         generation        = 50,
-                         fitPrefer         = "min")
-
-optimizing.run_serial()
-# besties = optimizing.run_paralel(coreCount=2)
-
-print("TOPLAM OPTİMİZASYON SÜRESİ:", datetime.now()-t)
-# besties = optimizing.besties
-# coord = coordinates.loc[besties.iloc[0,:-1],:]
-# coord = coord.append(coord.iloc[0,:])
-# plt.plot(coord.iloc[:,0], coord.iloc[:,1])
-# plt.scatter(coord.iloc[:,0], coord.iloc[:,1])
-# plt.plot(coord.iloc[0,0],coord.iloc[0,1], marker="o",  markersize=10)
-````
-
-
+Genetik algoritma sınıfını çalıştıracak kodlara ve açıklamalarına python dosyalarında ulaşabilirsiniz. 
 
 
 
