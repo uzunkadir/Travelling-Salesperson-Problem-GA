@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Feb 22 14:28:45 2022
-
-@author: kadir
-"""
-
 
 from GENETIC_OPT import Genetic_Opt
 
