@@ -1,4 +1,4 @@
-# Travelling_Sales_Problem_Genetic_Algorithm
+# Travelling Salesperson Problem | Genetic Algorithm Solution
 Gezgin Satıcı Problemi'nin Genetik Algoritmalarla Çözümü
 
 
