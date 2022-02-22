@@ -6,7 +6,7 @@ Gezgin Satıcı Problemi'nin Genetik Algoritmalarla Çözümü
 
 
 
-![2DTSP](videos/2DTSP.mp4)
+![3D Travelling Salesperson Problem | Genetic Algorithm Solution](https://www.youtube.com/watch?v=ivLCT8ISuz4)
 
 
 
