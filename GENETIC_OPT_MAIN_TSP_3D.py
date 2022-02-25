@@ -57,7 +57,7 @@ def plotFunction(indPath, indDist, bestPath, bestDist, gen_i):
 
 
 # rotada kaç nokta olacağını tanımlar 
-N_points = 10
+N_points = 15
 
 # X ve Y için -1,+1 aralığında rastgele koordinat üretir
 coordinates = []
