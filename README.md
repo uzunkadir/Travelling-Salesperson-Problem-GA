@@ -4,9 +4,9 @@ Gezgin Satıcı Problemi'nin Genetik Algoritmalarla Çözümü
 
 2D Travelling Salesperson Problem | Genetic Algorithm Solution
 
-[![3D Travelling Salesperson Problem | Genetic Algorithm Solution](https://img.youtube.com/vi/oKe37a89XKU/0.jpg)](https://www.youtube.com/watch?v=oKe37a89XKU)
-<video src="./videos/3DTSP.mp4" width="500px" controls >
-</video> 
+
+
+<video src="./videos/3DTSP.mp4" width="500px" controls > </video> 
 
 3D Travelling Salesperson Problem | Genetic Algorithm Solution
 
