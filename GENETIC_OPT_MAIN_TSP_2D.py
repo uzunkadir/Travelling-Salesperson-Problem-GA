@@ -1,5 +1,5 @@
 
-from GENETIC_OPT import Genetic_Opt
+from GENETIC_OPT_v3 import Genetic_Opt
 
 from datetime import datetime
 import math
@@ -34,9 +34,9 @@ def plotFunction(indPath, indDist, bestPath, bestDist, gen_i):
     bestCoor = bestCoor.append(bestCoor.iloc[0,:])
 
     # anlık rota çizdiriliyor
-    ax[0].plot(indvCoor.iloc[:,0], indvCoor.iloc[:,1],"-o")
-    ax[0].plot(indvCoor.iloc[0,0], indvCoor.iloc[0,1], c="red",marker="o",  markersize=10)
-    for i in range(len(indvCoor)): ax[0].annotate(str(indvCoor.index[i]),(indvCoor.iloc[i,0],indvCoor.iloc[i,1]) , fontsize=15 )
+    # ax[0].plot(indvCoor.iloc[:,0], indvCoor.iloc[:,1],"-o")
+    # ax[0].plot(indvCoor.iloc[0,0], indvCoor.iloc[0,1], c="red",marker="o",  markersize=10)
+    # for i in range(len(indvCoor)): ax[0].annotate(str(indvCoor.index[i]),(indvCoor.iloc[i,0],indvCoor.iloc[i,1]) , fontsize=15 )
     
     ax[0].set_title("{}.Generation \n{}.individual  \nIndividual Distance: {}".format(gen_i, count, round(indDist,4)),loc='left')
     
@@ -53,7 +53,7 @@ def plotFunction(indPath, indDist, bestPath, bestDist, gen_i):
     
 
 # rotada kaç nokta olacağını tanımlar 
-N_points = 10
+N_points = 20
 
 # X ve Y için -1,+1 aralığında rastgele koordinat üretir
 coordinates = []
@@ -75,8 +75,8 @@ optimizing = Genetic_Opt(coordinates       = coordinates,
                          plotFunction      = plotFunction,
                          Population_Number = 100,
                          best              = 10, 
-                         child             = 70,
-                         mutation          = 30, 
+                         child             = 50,
+                         mutation          = 50, 
                          generation        = 100,
                          fitPrefer         = "min")
 

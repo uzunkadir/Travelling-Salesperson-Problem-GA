@@ -52,7 +52,7 @@ def plotFunction(indPath, indDist, bestPath, bestDist, gen_i):
     
 
     # her iki çizim arasında 0.01 saniye bekliyor
-    plt.pause(0.01)
+    plt.pause(0.1)
     
 
 
